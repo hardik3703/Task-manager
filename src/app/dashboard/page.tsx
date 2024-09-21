@@ -8,6 +8,7 @@ import ConfirmationDialog from '../../components/ConfirmationDialog';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import ShowList from "@/components/ShowList";
+import toast, { Toaster} from 'react-hot-toast';
 
 const DashboardPage = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -23,7 +24,8 @@ const DashboardPage = () => {
         const response = await axios.get('/api/notes');
         setNotes(response.data.notes);
       } catch (err: any) {
-        setError('Failed to load notes');
+        toast.error("No Notes Found")
+        setError('No notes Found');
       } finally {
         setLoading(false);
       }
@@ -90,6 +92,7 @@ const DashboardPage = () => {
 
   return (
     <div className="w-screen h-max bg-gray-100 p-4">
+      <Toaster/>
       <div className="w-full h-full p-8 border-2 border-black shadow-lg rounded-lg bg-gray-100">
         <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
         <p className="text-gray-600">Drag and drop your tasks to manage them</p>
@@ -191,7 +194,7 @@ const DashboardPage = () => {
       >
         +
       </Button>
-      {showAddNote && <AddNoteButton setNotes={setNotes} />}
+      {showAddNote && <AddNoteButton setNotes={setNotes}  setShowAddNote={setShowAddNote} />}
       
       {confirmDeleteId && (
         <ConfirmationDialog 

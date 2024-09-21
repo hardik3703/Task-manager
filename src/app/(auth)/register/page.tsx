@@ -2,11 +2,14 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
+import toast, {Toaster} from 'react-hot-toast'
 import { useRouter } from 'next/navigation';
+import Loading from '@/components/loader/Loading';
 
 const RegisterForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -16,12 +19,14 @@ const RegisterForm = () => {
     e.preventDefault();
 
     try {
+      setLoading((prev) => true);
       const response = await axios.post('/api/register', { name, email, password });
-      setMessage('Registration successful!');
+      toast.success("Registration successful!")
       setError(null);
       setTimeout(() => {
-        router.push('/login'); // Navigate to /login after successful registration
-      }, 1500); 
+        router.push('/login'); 
+      }, 1500);
+      setLoading((prev) => false);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed');
       setMessage(null);
@@ -30,10 +35,13 @@ const RegisterForm = () => {
 
 
   return (
+    
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
+
+    <Toaster></Toaster>
       <form onSubmit={handleSubmit} className="max-w-md w-full p-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Create an Account</h2>
-        
+             {loading && <Loading/>}
         <div className="mb-5 flex items-center border border-gray-300 rounded-md shadow-sm">
           <FaUser className="text-gray-400 w-5 h-5 ml-3" />
           <input

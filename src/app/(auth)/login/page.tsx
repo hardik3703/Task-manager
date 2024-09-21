@@ -2,9 +2,12 @@
 import { getProviders, signIn } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
+import Loading from "@/components/loader/Loading";
 
 const SignInPage = () => {
     const [providers, setProviders] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -20,31 +23,40 @@ const SignInPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        
         try {
+            setLoading(true);
             const result = await signIn("credentials", {
                 redirect: true,
                 email,
                 password,
             });
+
+            toast.success("Successfully sign in")
             console.log(result);
+
             if (result?.error) {
                 setError(result.error);
             } else if (result?.ok) {
-                router.push('/dashboard'); // Redirect to a protected route after successful login
+                router.push('/dashboard'); 
             }
+            setLoading(false);
         } catch (err) {
             setError("An error occurred during sign-in.");
+            setLoading(false);
         }
+        setLoading(false);
     };
 
     return (
         <div className="flex items-center justify-center h-screen bg-gray-100">
+            <Toaster/>
             <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-lg border border-gray-200">
                 <h1 className="text-3xl font-semibold mb-6 text-gray-800">Sign In</h1>
                 
                 {error && <p className="text-red-500 mb-4">{error}</p>}
 
+                {loading && <Loading/>}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">

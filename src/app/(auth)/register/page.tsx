@@ -1,7 +1,8 @@
-'use client'
+'use client';
 import { useState } from 'react';
 import axios from 'axios';
 import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 const RegisterForm = () => {
   const [name, setName] = useState('');
@@ -9,6 +10,7 @@ const RegisterForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,11 +19,15 @@ const RegisterForm = () => {
       const response = await axios.post('/api/register', { name, email, password });
       setMessage('Registration successful!');
       setError(null);
+      setTimeout(() => {
+        router.push('/login'); // Navigate to /login after successful registration
+      }, 1500); 
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed');
       setMessage(null);
     }
   };
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -73,6 +79,8 @@ const RegisterForm = () => {
         
         {error && <p className="mt-4 text-red-500 text-center">{error}</p>}
         {message && <p className="mt-4 text-green-500 text-center">{message}</p>}
+
+
       </form>
     </div>
   );
